@@ -144,7 +144,7 @@ def note_toogle(request, note_id):
     note = get_object_or_404(Note, id=note_id, user=request.user)
     note.done = not note.done
     note.save()
-    return JsonResponse({'done': note.done})
+    return redirect('notes')
 
 
 @login_required
