@@ -1,0 +1,83 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Повідомлення — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/messages.css' %}">
+{% endblock %}
+{% block content %}
+<div class="messages-wrapper">
+    <div class="messages-header">
+        <h1>Повідомлення</h1>
+        {% if unread_count %}
+            <span class="badge">{{ unread_count }} непрочитаних</span>
+        {% endif %}
+    </div>
+
+    <div class="messages-layout">
+        <div class="messages-left">
+            <div class="messages-section">
+                <h2>Надіслати повідомлення</h2>
+                <form method="post" class="auth-form">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                {% for error in field.errors %}
+                                    <span class="form-error">{{ error }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Надіслати</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="messages-right">
+            <div class="messages-section">
+                <h2>Вхідні</h2>
+                {% if inbox %}
+                    {% for msg in inbox %}
+                        <a href="{% url 'message_read' msg.id %}" class="message-item {% if not msg.is_read %}message-item--unread{% endif %}">
+                            <div class="message-top">
+                                <span class="message-sender">
+                                    {{ msg.sender.first_name }} {{ msg.sender.last_name }}
+                                </span>
+                                <span class="message-date">{{ msg.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            <div class="message-subject">{{ msg.subject }}</div>
+                            {% if not msg.is_read %}
+                                <span class="unread-dot"></span>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-text">Вхідних повідомлень немає.</p>
+                {% endif %}
+            </div>
+
+            <div class="messages-section">
+                <h2>Надіслані</h2>
+                {% if sent %}
+                    {% for msg in sent %}
+                        <div class="message-item">
+                            <div class="message-top">
+                                <span class="message-sender">
+                                    Кому: {{ msg.recipient.first_name }} {{ msg.recipient.last_name }}
+                                </span>
+                                <span class="message-date">{{ msg.created_at|date:"d.m.Y H:i" }}</span>
+                            </div>
+                            <div class="message-subject">{{ msg.subject }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-text">Надісланих повідомлень немає.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

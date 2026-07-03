@@ -1,0 +1,36 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}{{ message.subject }} — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/messages.css' %}">
+{% endblock %}
+{% block content %}
+<div class="message-detail-wrapper">
+    <div class="message-detail-card">
+        <div class="message-detail-header">
+            <h1>{{ message.subject }}</h1>
+            <span class="message-date">{{ message.created_at|date:"d.m.Y H:i" }}</span>
+        </div>
+
+        <div class="message-detail-meta">
+            <div class="message-meta-row">
+                <span class="meta-label">Від:</span>
+                <span class="meta-value">{{ message.sender.first_name }} {{ message.sender.last_name }} (@{{ message.sender.username }})</span>
+            </div>
+            <div class="message-meta-row">
+                <span class="meta-label">Кому:</span>
+                <span class="meta-value">{{ message.recipient.first_name }} {{ message.recipient.last_name }} (@{{ message.recipient.username }})</span>
+            </div>
+        </div>
+
+        <div class="message-detail-body">
+            {{ message.body|linebreaks }}
+        </div>
+
+        <div class="message-detail-actions">
+            <a href="{% url 'masseges_inbox' %}" class="btn btn-sm">← Назад до повідомлень</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Профіль — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+{% endblock %}
+{% block content %}
+<div class="profile-wrapper">
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="Аватар" class="avatar-img">
+            {% else %}
+                <div class="avatar-initials" style="background-color: {{ profile.avatar_color }}">
+                    {{ profile.get_initials }}
+                </div>
+            {% endif %}
+        </div>
+        <div class="profile-info">
+            <h1>{{ request.user.first_name }} {{ request.user.last_name }}</h1>
+            <p class="profile-username">@{{ request.user.username }}</p>
+            <p class="profile-email">{{ request.user.email }}</p>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <h2>Редагувати профіль</h2>
+        <form method="post" enctype="multipart/form-data" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

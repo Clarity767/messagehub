@@ -1,0 +1,78 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Завдання — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/notes.css' %}">
+{% endblock %}
+{% block content %}
+<div class="notes-wrapper">
+    <div class="notes-header">
+        <h1>Мої завдання</h1>
+        <div class="notes-stats">
+            <span>Всього: {{ total_notes }}</span>
+            <span>Виконано: {{ done_count }}</span>
+            <span>Залишилось: {{ total_notes|add:done_count|add:"-"|add:done_count }}</span>
+        </div>
+    </div>
+
+    <div class="notes-add">
+        <h2>Додати завдання</h2>
+        <form method="post" class="notes-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Додати</button>
+        </form>
+    </div>
+
+    <div class="notes-filter">
+        <a href="?filter=all" class="btn btn-sm {% if filter_by == 'all' %}btn-active{% endif %}">Всі</a>
+        <a href="?filter=active" class="btn btn-sm {% if filter_by == 'active' %}btn-active{% endif %}">Активні</a>
+        <a href="?filter=done" class="btn btn-sm {% if filter_by == 'done' %}btn-active{% endif %}">Виконані</a>
+        <a href="?filter=high" class="btn btn-sm {% if filter_by == 'high' %}btn-active{% endif %}">Високий пріоритет</a>
+    </div>
+
+    <div class="notes-list">
+        {% if notes %}
+            {% for note in notes %}
+                <div class="note-card {% if note.done %}note-card--done{% endif %} priority-border-{{ note.priority }}">
+                    <div class="note-top">
+                        <h3 class="note-title">{{ note.title }}</h3>
+                        <span class="priority-badge priority-{{ note.priority }}">{{ note.get_priority_display }}</span>
+                    </div>
+                    {% if note.content %}
+                        <p class="note-content">{{ note.content }}</p>
+                    {% endif %}
+                    <div class="note-footer">
+                        <span class="note-date">{{ note.created_at|date:"d.m.Y H:i" }}</span>
+                        <div class="note-actions">
+                            <form method="post" action="{% url 'note_toggle' note.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm {% if note.done %}btn-undo{% else %}btn-done{% endif %}">
+                                    {% if note.done %}Скасувати{% else %}Виконано{% endif %}
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'note_delete' note.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Видалити</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="empty-text">Завдань немає.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Дашборд — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/dashboard.css' %}">
+{% endblock %}
+{% block content %}
+<div class="dashboard-wrapper">
+    <div class="dashboard-header">
+        <h1>Привіт, {{ request.user.first_name }}! 👋</h1>
+        <p class="dashboard-subtitle">Ось ваша статистика на сьогодні</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_notes }}</div>
+            <div class="stat-label">Всього завдань</div>
+        </div>
+        <div class="stat-card stat-card--done">
+            <div class="stat-number">{{ done_notes }}</div>
+            <div class="stat-label">Виконано</div>
+        </div>
+        <div class="stat-card stat-card--pending">
+            <div class="stat-number">{{ pedding_notes }}</div>
+            <div class="stat-label">Залишилось</div>
+        </div>
+        <div class="stat-card stat-card--high">
+            <div class="stat-number">{{ high_priority_notes }}</div>
+            <div class="stat-label">Високий пріоритет</div>
+        </div>
+        <div class="stat-card stat-card--messages">
+            <div class="stat-number">{{ unread_messages }}</div>
+            <div class="stat-label">Непрочитаних повідомлень</div>
+        </div>
+    </div>
+
+    {% if total_notes > 0 %}
+    <div class="progress-wrapper">
+        <div class="progress-label">Прогрес виконання: {{ completion_pct|floatformat:0 }}%</div>
+        <div class="progress-bar">
+            {% load l10n %}
+            <div class="progress-fill" style="width: {{ completion_pct }}%"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="dashboard-sections">
+        <div class="dashboard-section">
+            <div class="section-header">
+       Ы         <h2>Останні завдання</h2>
+                <a href="{% url 'notes' %}" class="btn btn-sm">Всі завдання</a>
+            </div>
+            {% if recent_notes %}
+                <ul class="recent-list">
+                    {% for note in recent_notes %}
+                        <li class="recent-item {% if note.done %}recent-item--done{% endif %}">
+                            <span class="recent-title">{{ note.title }}</span>
+                            <span class="priority-badge priority-{{ note.priority }}">{{ note.get_priority_display }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-text">Завдань ще немає. <a href="{% url 'notes' %}">Додати</a></p>
+            {% endif %}
+        </div>
+
+        <div class="dashboard-section">
+            <div class="section-header">
+                <h2>Останні повідомлення</h2>
+                <a href="{% url 'masseges_inbox' %}" class="btn btn-sm">Всі повідомлення</a>
+            </div>
+            {% if recent_massages %}
+                <ul class="recent-list">
+                    {% for msg in recent_massages %}
+                        <li class="recent-item {% if not msg.is_read %}recent-item--unread{% endif %}">
+                            <a href="{% url 'message_read' msg.id %}">
+                                <span class="recent-title">{{ msg.subject }}</span>
+                                <span class="recent-meta">від {{ msg.sender.first_name }} {{ msg.sender.last_name }}</span>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="empty-text">Повідомлень немає.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

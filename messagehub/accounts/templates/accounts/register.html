@@ -1,0 +1,32 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block title %}Реєстрація — Messagehub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'accounts/css/auth.css' %}">
+{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <h1 class="auth-title">Реєстрація</h1>
+
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        {% for error in field.errors %}
+                            <span class="form-error">{{ error }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Зареєструватись</button>
+        </form>
+
+        <p class="auth-link">Вже є акаунт? <a href="{% url 'login' %}">Увійти</a></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+.auth-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid #ddd;
+}
+
+.auth-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.auth-link a {
+    color: #3498db;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 20px 14px;
+    }
+}
